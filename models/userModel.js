@@ -35,6 +35,12 @@ class User {
 
   static async login({ email, phone, password }) {
     try {
+      // Default values for missing email or phone
+      if (!email && !phone) {
+        throw new Error('Either email or phone must be provided');
+      }
+  
+      // Replace `undefined` with `null` explicitly for email and phone
       const query = `SELECT * FROM users WHERE email = ? OR phone = ?`;
       const [rows] = await db.execute(query, [email || null, phone || null]);
   
@@ -53,6 +59,7 @@ class User {
       throw new Error('Error logging in user: ' + error.message);
     }
   }
+  
   
 }
 
