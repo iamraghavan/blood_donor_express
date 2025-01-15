@@ -36,23 +36,24 @@ class User {
   static async login({ email, phone, password }) {
     try {
       const query = `SELECT * FROM users WHERE email = ? OR phone = ?`;
-      const [rows] = await db.execute(query, [email, phone]);
-
+      const [rows] = await db.execute(query, [email || null, phone || null]);
+  
       if (rows.length === 0) {
         throw new Error('User not found');
       }
-
+  
       const user = rows[0];
       const validPassword = await bcrypt.compare(password, user.password);
       if (!validPassword) {
         throw new Error('Invalid credentials');
       }
-
+  
       return user;
     } catch (error) {
       throw new Error('Error logging in user: ' + error.message);
     }
   }
+  
 }
 
 module.exports = User;

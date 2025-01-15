@@ -18,9 +18,15 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, phone, password } = req.body;
 
+  if (!email && !phone) {
+    return res.status(400).json({ message: 'Email or phone is required' });
+  }
+  if (!password) {
+    return res.status(400).json({ message: 'Password is required' });
+  }
+
   try {
     const user = await User.login({ email, phone, password });
-
     const token = jwt.sign({ userId: user.id }, 'SECRET_KEY', { expiresIn: '1h' });
 
     res.status(200).json({
@@ -33,8 +39,8 @@ exports.login = async (req, res) => {
         phone: user.phone,
         dob: user.dob,
         blood_group: user.blood_group,
-        pincode: user.pincode
-      }
+        pincode: user.pincode,
+      },
     });
   } catch (error) {
     res.status(400).json({ message: error.message });
