@@ -18,20 +18,27 @@ class User {
     try {
       const userId = await User.generateUserId();
       const hashedPassword = await bcrypt.hash(password, 10);
-
-      const query = `INSERT INTO users (user_id, name, email, phone, password, dob, blood_group, pincode, country, state, city) 
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-      const [result] = await db.execute(query, [userId, name, email, phone, hashedPassword, dob, bloodGroup, pincode, country, state, city]);
-
-      // Create a profile entry after user registration
-      const profileQuery = `INSERT INTO profiles (user_id, name) VALUES (?, ?)`;
-      await db.execute(profileQuery, [userId, name]);
-
+  
+      // Insert into `users` table
+      const userQuery = `
+        INSERT INTO users (user_id, name, email, phone, password, dob, blood_group, pincode, country, state, city) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+      const [result] = await db.execute(userQuery, [userId, name, email, phone, hashedPassword, dob, bloodGroup, pincode, country, state, city]);
+  
+      // Insert into `profiles` table, including additional fields
+      const profileQuery = `
+        INSERT INTO profiles (user_id, name, contact_number, blood_group, dob, pincode, country, state, city) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+      await db.execute(profileQuery, [userId, name, phone, bloodGroup, dob, pincode, country, state, city]);
+  
       return result.insertId;
     } catch (error) {
       throw new Error('Error registering user: ' + error.message);
     }
   }
+  
 
   static async login({ email, phone, password }) {
     try {

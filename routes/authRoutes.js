@@ -5,8 +5,6 @@ const userController = require('../controllers/userController');
 
 // Register route
 router.post('/register', apiKeyMiddleware, userController.register);
-
-// Login route
 router.post('/login', apiKeyMiddleware, userController.login);
 
 module.exports = router;
