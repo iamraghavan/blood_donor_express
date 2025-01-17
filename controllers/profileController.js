@@ -54,17 +54,18 @@ exports.getProfile = async (req, res) => {
   
   
 
-exports.deleteProfile = async (req, res) => {
-  const { user_id } = req.params;
+  exports.deleteProfile = async (req, res) => {
+    const { user_id } = req.params;
 
-  try {
-    const deletedRows = await Profile.deleteProfile(user_id);
-    if (deletedRows > 0) {
-      res.status(200).json({ message: 'Profile deleted successfully' });
-    } else {
-      res.status(404).json({ message: 'Profile not found' });
+    try {
+        const affectedRows = await Profile.softDeleteProfile(user_id);
+        if (affectedRows > 0) {
+            res.status(200).json({ message: 'Profile marked as inactive successfully' });
+        } else {
+            res.status(404).json({ message: 'Profile not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Error marking profile as inactive: ' + error.message });
     }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
 };
+

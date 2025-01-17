@@ -57,15 +57,16 @@ class Profile {
 
   
 
-  static async deleteProfile(user_id) {
+  static async softDeleteProfile(user_id) {
     try {
-      const query = 'DELETE FROM profiles WHERE user_id = ?';
-      const [result] = await db.execute(query, [user_id]);
-      return result.affectedRows;
+        const query = 'UPDATE profiles SET is_active = 0 WHERE user_id = ?';
+        const [result] = await db.execute(query, [user_id]);
+        return result.affectedRows;
     } catch (error) {
-      throw new Error('Error deleting profile: ' + error.message);
+        throw new Error('Error soft deleting profile: ' + error.message);
     }
-  }
+}
+
 }
 
 module.exports = Profile;
